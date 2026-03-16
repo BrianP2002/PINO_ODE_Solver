@@ -5,6 +5,15 @@ from src.model import PINO1d
 from src.physics import pino_loss
 from src.dataset import OscillatorDataset
 import os
+import numpy as np
+import random
+
+seed = 20260316
+torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(seed)
 
 def train():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -1,6 +1,16 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import os
+import torch
+import numpy as np
+import random
+
+seed = 20260316
+torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(seed)
 
 def vdp_deriv(t, y, mu):
     x, dxdt = y

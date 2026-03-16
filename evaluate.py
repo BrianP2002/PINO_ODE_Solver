@@ -5,6 +5,14 @@ import os
 from scipy.integrate import solve_ivp
 from src.model import PINO1d
 from src.dataset import OscillatorDataset
+import random
+
+seed = 20260316
+torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(seed)
 
 # Helper function for the Van der Pol ODE
 def vdp_deriv(t, y, mu=1.0):
