@@ -6,13 +6,16 @@
 ## Overview
 This repository contains a PyTorch implementation of a Physics-Informed Neural Operator (PINO) designed to solve the Van der Pol oscillator equations. The project demonstrates standard trajectory prediction, zero-shot super-resolution, and autoregressive temporal extrapolation.
 
+## Documentation
+For the full mathematical derivation of the PINO architecture, the spectral convolution theory, and the physics-informed loss framework used in this project, please refer to:
+* **[Mathematical_Supplement.pdf](./Mathematical_Supplement.pdf)** (Available in the root directory)
+
 ## Repository Structure
 
     pino_ode_solver/
     ├── data/                  # Generated baseline data
     ├── results/               # Loss plots and trajectory visuals
     ├── src/                   # Core modules
-    │   ├── __init__.py
     │   ├── model.py           # SpectralConv1d and PINO1d architecture
     │   ├── physics.py         # Finite difference PDE loss calculation
     │   └── dataset.py         # Custom PyTorch Dataset logic
@@ -22,72 +25,17 @@ This repository contains a PyTorch implementation of a Physics-Informed Neural O
     ├── environment.yml        # Conda environment dependencies
     └── README.md              
 
-## Mathematical Development
-
-### 1. The Governing Equation (Van der Pol Oscillator)
-The target physical system is a non-conservative oscillator with non-linear damping. The governing second-order ordinary differential equation is:
-
-$$
-\frac{d^2x}{dt^2} - \mu(1 - x^2)\frac{dx}{dt} + x = 0
-$$
-
-where $x$ is the position coordinate and $\mu$ is a scalar parameter indicating the nonlinearity and strength of the damping.
-
-### 2. Spectral Convolution
-The core operation of the Neural Operator is the **Spectral Convolution**, which performs operations in the frequency domain to learn mappings between infinite-dimensional function spaces:
-
-1. **Transform**: Apply the Fast Fourier Transform (FFT) to the temporal input:
-$$
-\hat{x} = \mathcal{F}(x)
-$$
-
-2. **Filter**: Truncate to the lowest $k$ modes and multiply by learned complex weights $R$:
-$$
-\hat{x}_{out} = R \cdot \hat{x}_{in}
-$$
-
-3. **Inverse**: Apply the Inverse FFT to return to the physical domain:
-$$
-x_{out} = \mathcal{F}^{-1}(\hat{x}_{out})
-$$
-
-### 3. Physics-Informed Loss Function ($\mathcal{L}_{pde}$)
-To ensure physical consistency, a physics-informed loss term is added to the data loss ($\mathcal{L}_{data}$). Derivatives are approximated using central finite differences on the uniform grid:
-
-**First Derivative:**
-$$
-\frac{dx}{dt} \approx \frac{x_{i+1} - x_{i-1}}{2\Delta t}
-$$
-
-**Second Derivative:**
-$$
-\frac{d^2x}{dt^2} \approx \frac{x_{i+1} - 2x_i + x_{i-1}}{\Delta t^2}
-$$
-
-**Total Loss:**
-$$
-\mathcal{L}_{total} = \mathcal{L}_{data} + \lambda \mathcal{L}_{pde}
-$$
-
 ## Running the Code
 
 ### 1. Environment Setup
-We use conda for environment management to ensure all dependencies are correctly handled.
-
     conda env create -f environment.yml
     conda activate pino_env
 
 ### 2. Generate the Dataset
-Generate the ground-truth training and testing data using a standard Runge-Kutta (RK45) numerical solver.
-
     python generate_data.py
 
 ### 3. Train the PINO Model
-Train the neural operator. The script will save the best model weights to the results directory.
-
     python train.py
 
 ### 4. Evaluate and Visualize
-Run the comprehensive evaluation suite. This script loads the trained model and automatically executes three tests, saving a combined result plot in the results folder.
-
     python evaluate.py
