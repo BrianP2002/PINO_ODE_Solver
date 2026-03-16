@@ -27,27 +27,28 @@ This repository contains a PyTorch implementation of a Physics-Informed Neural O
 ### 1. The Governing Equation (Van der Pol Oscillator)
 The target physical system is a non-conservative oscillator with non-linear damping. The governing second-order ordinary differential equation is:
 
-d^2x/dt^2 - mu * (1 - x^2) * dx/dt + x = 0
+$$\frac{d^2x}{dt^2} - \mu(1 - x^2)\frac{dx}{dt} + x = 0$$
 
-where 'x' is the position coordinate and 'mu' is a scalar parameter indicating the nonlinearity and strength of the damping.
+where $x$ is the position coordinate and $\mu$ is a scalar parameter indicating the nonlinearity and strength of the damping.
 
 ### 2. Spectral Convolution
-Unlike standard Multi-Layer Perceptrons, the Neural Operator learns mappings between infinite-dimensional function spaces. The core operation is the Spectral Convolution, which performs operations in the frequency domain:
-1. Transform: Apply the Fast Fourier Transform (FFT) to the spatial/temporal input.
-2. Filter: Truncate to the lowest 'k' modes and multiply by a learned complex weight matrix.
-3. Inverse: Apply the Inverse Fast Fourier Transform (IFFT) to return to the physical domain.
+The core operation of the Neural Operator is the **Spectral Convolution**, which performs operations in the frequency domain to learn mappings between infinite-dimensional function spaces:
 
-### 3. Physics-Informed Loss Function (L_pde)
-To constrain the neural operator to physically valid trajectories, a physics-informed loss term is added to the standard data loss (L_data). Since the operator outputs predictions on a uniform temporal grid, derivatives are approximated using central finite differences:
+1. **Transform**: Apply the Fast Fourier Transform (FFT) to the temporal input: $\hat{x} = \mathcal{F}(x)$.
+2. **Filter**: Truncate to the lowest $k$ modes and multiply by learned complex weights $R$: $\hat{x}_{out} = R \cdot \hat{x}_{in}$.
+3. **Inverse**: Apply the Inverse FFT to return to the physical domain: $x_{out} = \mathcal{F}^{-1}(\hat{x}_{out})$.
 
-First Derivative:
-dx/dt ≈ (x[i+1] - x[i-1]) / (2 * dt)
+### 3. Physics-Informed Loss Function ($\mathcal{L}_{pde}$)
+To ensure physical consistency, a physics-informed loss term is added to the data loss ($\mathcal{L}_{data}$). Derivatives are approximated using central finite differences on the uniform grid:
 
-Second Derivative:
-d^2x/dt^2 ≈ (x[i+1] - 2x[i] + x[i-1]) / (dt^2)
+**First Derivative:**
+$$\frac{dx}{dt} \approx \frac{x_{i+1} - x_{i-1}}{2\Delta t}$$
 
-The total loss optimized during training is:
-L_total = L_data + lambda * L_pde
+**Second Derivative:**
+$$\frac{d^2x}{dt^2} \approx \frac{x_{i+1} - 2x_i + x_{i-1}}{\Delta t^2}$$
+
+**Total Loss:**
+$$\mathcal{L}_{total} = \mathcal{L}_{data} + \lambda \mathcal{L}_{pde}$$
 
 ## Running the Code
 
