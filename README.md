@@ -34,9 +34,12 @@ where $x$ is the position coordinate and $\mu$ is a scalar parameter indicating 
 ### 2. Spectral Convolution
 The core operation of the Neural Operator is the **Spectral Convolution**, which performs operations in the frequency domain to learn mappings between infinite-dimensional function spaces:
 
-1. **Transform**: Apply the Fast Fourier Transform (FFT) to the temporal input: $\hat{x} = \mathcal{F}(x)$.
-2. **Filter**: Truncate to the lowest $k$ modes and multiply by learned complex weights $R$: $\hat{x}_{out} = R \cdot \hat{x}_{in}$.
-3. **Inverse**: Apply the Inverse FFT to return to the physical domain: $x_{out} = \mathcal{F}^{-1}(\hat{x}_{out})$.
+1. **Transform**: Apply the Fast Fourier Transform (FFT) to the temporal input:  
+   $$\hat{x} = \mathcal{F}(x)$$
+2. **Filter**: Truncate to the lowest $k$ modes and multiply by learned complex weights $R$:  
+   $$\hat{x}_{out} = R \cdot \hat{x}_{in}$$
+3. **Inverse**: Apply the Inverse FFT to return to the physical domain:  
+   $$x_{out} = \mathcal{F}^{-1}(\hat{x}_{out})$$
 
 ### 3. Physics-Informed Loss Function ($\mathcal{L}_{pde}$)
 To ensure physical consistency, a physics-informed loss term is added to the data loss ($\mathcal{L}_{data}$). Derivatives are approximated using central finite differences on the uniform grid:
